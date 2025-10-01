@@ -3,10 +3,12 @@ package com.celular.celular.controller;
 import com.celular.celular.dto.request.CelularForm;
 import com.celular.celular.dto.response.CelularDto;
 import com.celular.celular.service.CelularService;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -53,5 +55,11 @@ public class CelularController {
     public ResponseEntity<CelularDto> patchCelular(@PathVariable String celularName, @RequestBody CelularForm celularForm){
         CelularDto celularDtoUpdated = celularService.patchCelularByName(celularName, celularForm);
         return ResponseEntity.ok(celularDtoUpdated);
+    }
+
+    @PostMapping("/lote")
+    public ResponseEntity<Set<CelularDto>> createCelulares(@RequestBody List<CelularForm> celularFormList){
+        Set<CelularDto> created = celularService.createCelularesLote(celularFormList);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }

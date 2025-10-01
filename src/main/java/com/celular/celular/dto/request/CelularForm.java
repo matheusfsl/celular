@@ -1,13 +1,16 @@
 package com.celular.celular.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class CelularForm {
 
-    @NotBlank(message = "Name cannot be blank.")
+    @NotBlank(message = "name cannot be blank")
+    @Size(max = 100, message = "name cannot exceed 100 characters")
     private String name;
 
-    @NotBlank(message = "Description cannot be blank.")
+    @NotBlank(message = "name cannot be blank")
+    @Size(max = 200, message = "description cannot exceed 100 character")
     private String description;
 
     public String getName() {

@@ -15,8 +15,11 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CelularService {
@@ -31,7 +34,7 @@ public class CelularService {
     public CelularModel getCelularModelByName(String celularName) {
         return celularRepository.findByNameContainingIgnoreCase(celularName)
                 .orElseThrow(() -> new CelularNotFoundException(
-                        String.format("O produto '%s' não foi encontrado", celularName)
+                        String.format("O Celular '%s' não foi encontrado", celularName)
                 ));
     }
 
@@ -105,6 +108,20 @@ public class CelularService {
                     String.format("Falha ao atualizar parcialmente o celular '%s'. Verifique os dados enviados.", celularName)
             );
         }
+    }
+
+    @Transactional
+    public Set<CelularDto> createCelularesLote(List<CelularForm> celularFormList){
+        List<CelularModel> celularModels = celularFormList.stream()
+                .filter(form -> celularRepository.findByNameContainingIgnoreCase(form.getName()).isEmpty())
+                .map(celularMapper::formToModel)
+                .peek(model -> model.setActive(true))
+                .toList();
+        List<CelularModel> saved = celularRepository.saveAll(celularModels);
+
+        return saved.stream()
+                .map(celularMapper::modelToDto)
+                .collect(Collectors.toSet());
     }
 
     @Transactional
